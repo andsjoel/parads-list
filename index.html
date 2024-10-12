@@ -3,36 +3,32 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
-        <link rel="stylesheet" href="styles.css">
-        <link rel="stylesheet" href="index.css">
+        <title>Parads</title>
+        <link rel="stylesheet" href="./assets/styles/styles.css">
+        <link rel="stylesheet" href="./assets/styles/index.css">
     </head>
     <body>
         <header>
+            <img src="./assets/img/bola_logo.png" alt="logo">
             <nav>
-                <h2>Parads</h2>
                 <ul>
-                    <li><a href="index.html">Lista</a></li>
-                </ul>
-                <ul>
+                    <h2>Parads</h2>
                     <li>
-                        <input type="text" id="admPass" placeholder="Adm pass" autocomplete="off">
+                        <input type="text" id="admPass" placeholder="adm pin" autocomplete="off">
                         <button id="admBtn">Go</button>
                     </li>
                 </ul>
             </nav>
         </header>
         <section>
-            <h2>Lista</h2>
             <div id="teamsContainer">
-                <div id="returningTeam"></div>
+                <div id="onHoldTeam"></div>
                 <div id="teams"></div>
             </div>
         </section>
-        
         <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
     
-        <script type="module" src="./script.js"></script>
+        <script type="module" src="./assets/script/script.js"></script>
     </body>
     </html>

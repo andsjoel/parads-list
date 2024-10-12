@@ -39,6 +39,7 @@ db.collection('teams').doc('currentTeams').onSnapshot((doc) => {
         
         // Renderizar a lista de times na página
         renderTeams();
+        // saveTeamsToFirestore();
     } else {
         console.log("No teams data found!");
     }
@@ -527,6 +528,7 @@ function clearTeams() {
     if (confirmClear) {
         teams = []
         renderTeams();
+        teamOnHold = null;
         saveTeamsToFirestore();
     }
 }

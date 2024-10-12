@@ -19,10 +19,77 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 const teamsContainer = document.getElementById('teamsContainer');
+const onHoldContainer = document.getElementById('onHoldTeam');
+const waitingPlayer = document.getElementById('waitingPlayer');
+
+let countBalloon = 0;
+let balaoVisivel = false;
+
+const falas = [
+    "Achou que ia estourar meu balão? Sou apenas um Gif, trouxa.",
+    "Sabe como um Gif funciona?",
+    "Nem eu.",
+    "Ainda nessa?",
+    "Podemos ficar aqui o dia todo...",
+    "Cadê os adm?",
+    "...",
+    "Meow Meow",
+    "Não da pra estourar, você sabe né?",
+    "Mesmo que desse...",
+    "BUUM! Brincadeira.",
+    "Eita, senti balançando.",
+    "Ta, sério. Cadê os adm???",
+    "Para aê ow, brother.",
+    "Brincadeira. Parei.",
+    "PARA!",
+    "AAAAAAAA",
+    "EU VOU MORRER!",
+    "Meow?"
+];
 
 function renderTeamsFromFirestore(teamsData, teamOnHold) {
 
     teamsContainer.innerHTML = ''; // Limpa o container
+
+    if (!teamsData || teamsData.length === 0) {
+        const waitingMessage = document.createElement('h2');
+        waitingMessage.textContent = "Waiting for Player One...";
+        waitingMessage.classList.add('blink')
+        teamsContainer.appendChild(waitingMessage);
+
+        const balloon = document.createElement('div');
+        balloon.classList.add('balloon');
+
+        const waitingCat = document.createElement('img');
+        waitingCat.src = './assets/img/balloon_cat.gif';
+        waitingCat.classList.add('cat-wait')
+        balloon.appendChild(waitingCat);
+
+        const balao = document.createElement('p');
+
+        balao.textContent = 'Achou que ia estourar meu balão? Sou só um Gif!'
+        balao.style.display = 'none';
+
+        balloon.appendChild(balao)
+
+        balloon.addEventListener('click', () => {
+            if (!balaoVisivel && countBalloon < falas.length) { // Verifica se o balão não está visível
+                balaoVisivel = true; // Marca que o balão está visível
+                balao.textContent = falas[countBalloon]; // Atualiza o texto do balão com a fala atual
+                balao.style.display = 'block'; // Mostra o balão
+                setTimeout(() => {
+                    balao.style.display = 'none'; // Esconde o balão após 2.5 segundos
+                    balaoVisivel = false; // Marca que o balão não está mais visível
+                }, 2500); // O balão ficará visível por 2 segundos
+                countBalloon++; // Incrementa o índice para a próxima fala
+            } else if (countBalloon >= falas.length) {
+                countBalloon = 0; // Reseta o índice se chegar ao final
+            }
+        });
+
+        teamsContainer.appendChild(balloon);
+        return;
+    }
 
     teamsData.forEach((team, index) => {
         const teamDiv = document.createElement('div');
@@ -33,16 +100,16 @@ function renderTeamsFromFirestore(teamsData, teamOnHold) {
         teamDiv.appendChild(teamTitle);
 
         if (index === 2) {
-            teamTitle.textContent = `1º Próxima`
+            teamTitle.textContent = `1º Próxima`;
         }
         if (index === 3) {
-            teamTitle.textContent = `2º Próxima`
+            teamTitle.textContent = `2º Próxima`;
         }
         if (index === 4) {
-            teamTitle.textContent = `3º Próxima`
+            teamTitle.textContent = `3º Próxima`;
         }
         if (index === 5) {
-            teamTitle.textContent = `5º Próxima`
+            teamTitle.textContent = `5º Próxima`;
         }
 
         const playerList = document.createElement('ul');
@@ -50,6 +117,7 @@ function renderTeamsFromFirestore(teamsData, teamOnHold) {
         // Exibir jogadores
         team.players.forEach((player, playerIndex) => {
             const playerItem = document.createElement('li');
+            playerItem.classList.add('player-space');
             if (player) {
                 playerItem.textContent = player.name;
                 if (player.isSetter) {
@@ -69,13 +137,15 @@ function renderTeamsFromFirestore(teamsData, teamOnHold) {
     });
 
     if (teamOnHold) {
-        const onHoldContainer = document.getElementById('onHoldTeam');
-        onHoldContainer.innerHTML = `<h3>Time de Volta</h3>`;
+        console.log('TIME',teamOnHold);
+
+        onHoldContainer.innerHTML = '<h3>Time de Volta</h3>';
         teamOnHold.players.forEach((player, index) => {
-            const playerItem = document.createElement('div');
+            const playerItem = document.createElement('p');
             playerItem.textContent = player.name;
             onHoldContainer.appendChild(playerItem);
         });
+        console.log(onHoldContainer);
     }
 }
 
@@ -93,7 +163,7 @@ db.collection('teams').doc('currentTeams').onSnapshot((doc) => {
     }
 });
 
-const correctPassword = "12345"; // Altere para a senha que você deseja
+const correctPassword = "$rt52wdf#?"; // Altere para a senha que você deseja
 
 // Adicionando evento de clique ao botão
 document.getElementById("admBtn").addEventListener("click", function() {
