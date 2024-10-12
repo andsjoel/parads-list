@@ -31,78 +31,18 @@ const returningTeamContainer = document.getElementById('returningTeam') //Div pa
 const removePlayerBtn = document.getElementById('removePlayerBtn');
 const admBtn = document.getElementById('admBtn');
 
-// Função auxiliar para criar a estrutura de um time (com nome e lista de jogadores)
-// function createTeamElement(team, title, teamIndex = null) {
-//     const teamDiv = document.createElement('div');
-//     teamDiv.classList.add('team');
-
-//     const teamTitle = document.createElement('h3');
-//     teamTitle.textContent = title;
-//     teamDiv.appendChild(teamTitle);
-
-//     const playerList = document.createElement('div');
-//     playerList.style.display = 'flex';
-//     playerList.style.flexDirection = 'column'; // Exibir os jogadores em coluna
-
-//     // Garantir que sempre tenha 6 espaços
-//     for (let i = 0; i < 6; i++) {
-//         const playerItem = document.createElement('div');
-//         playerItem.classList.add('player-space');
-
-//         // Verificar se existe jogador para preencher o espaço
-//         if (team.players[i]) {
-//             const player = team.players[i];
-//             playerItem.textContent = player.name;
-
-//             // Se for levantador, aplica classe de cor verde
-//             if (player.isSetter) {
-//                 playerItem.classList.add('player-setter');
-//             }
-
-//             // Se for mulher, aplica classe de cor lilás
-//             if (player.isFemale) {
-//                 playerItem.classList.add('player-female');
-//             }
-
-//             // Adicionar evento de clique para selecionar o jogador
-//             playerItem.addEventListener('click', function (event) {
-//                 event.stopPropagation(); // Impede que o clique seja propagado para o documento
-//                 selectPlayer(player, playerItem);
-//             });
-
-//         } else {
-//             // Se não houver jogador, marcar o espaço como vazio
-//             playerItem.textContent = 'Vazio';
-//             playerItem.classList.add('player-empty');
-
-//             // Adicionar evento de clique para selecionar o espaço vazio
-//             playerItem.addEventListener('click', function (event) {
-//                 event.stopPropagation(); // Impede que o clique seja propagado para o documento
-//                 selectEmptySpace(playerItem, teams.indexOf(team), i);
-//             });
-
-//             // Se o espaço vazio estiver selecionado, aplicar o destaque visual
-//             if (selectedEmptySpace && selectedEmptySpace.teamIndex === teams.indexOf(team) && selectedEmptySpace.playerIndex === i) {
-//                 playerItem.classList.add('player-empty-selected');
-//             }
-//         }
-
-//         playerList.appendChild(playerItem);
-//     }
-
-//     teamDiv.appendChild(playerList);
-
-//     // Se for um dos dois primeiros times, adicionar o botão "Venceu"
-//     //#######################################################
-//     if (teamIndex === 0 || teamIndex === 1) {
-//         const winButton = createWinButton(teamIndex);
-//         teamDiv.appendChild(winButton);
-//     }
-
-//     return teamDiv;
-//     //#######################################################
-//     // return teamDiv;
-// }
+db.collection('teams').doc('currentTeams').onSnapshot((doc) => {
+    if (doc.exists) {
+        const data = doc.data();
+        teams = data.teams;
+        teamOnHold = data.teamOnHold;
+        
+        // Renderizar a lista de times na página
+        renderTeams();
+    } else {
+        console.log("No teams data found!");
+    }
+});
 
 // Função para salvar os times no Firestore
 function saveTeamsToFirestore() {
@@ -572,6 +512,7 @@ function renderTeams() {
 
 // Adicionando o evento para o botão de popular times
 document.getElementById('populateTeamsButton').addEventListener('click', populateTeams);
+document.getElementById('clearTeams').addEventListener('click', clearTeams)
 
 function populateTeams() {
     mockPlayers.forEach(player => {
@@ -579,6 +520,15 @@ function populateTeams() {
     });
     renderTeams();
     saveTeamsToFirestore();
+}
+
+function clearTeams() {
+    const confirmClear = confirm('Deseja limpar os times?');
+    if (confirmClear) {
+        teams = []
+        renderTeams();
+        saveTeamsToFirestore();
+    }
 }
 
 // ##########################

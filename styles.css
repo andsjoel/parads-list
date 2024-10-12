@@ -4,16 +4,22 @@
   }
 
 :root {
-    --one-bg: #4b4453;
+    /* --one-bg: #4b4453; */
 }
 
 /* Estilos Gerais */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+* {
+    padding: 0;
     margin: 0;
-    padding: 20px;
+    box-sizing: border-box;
 }
+
+body {
+    /* font-family: 'Start'; */
+    background-color: var(--one-bg);
+    margin: 0;
+}
+
 
 /* Container principal */
 #teamsContainer {

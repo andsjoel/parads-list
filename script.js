@@ -18,8 +18,10 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+const teamsContainer = document.getElementById('teamsContainer');
+
 function renderTeamsFromFirestore(teamsData, teamOnHold) {
-    const teamsContainer = document.getElementById('teamsContainer');
+
     teamsContainer.innerHTML = ''; // Limpa o container
 
     teamsData.forEach((team, index) => {
@@ -30,13 +32,32 @@ function renderTeamsFromFirestore(teamsData, teamOnHold) {
         teamTitle.textContent = `Time ${index + 1}`;
         teamDiv.appendChild(teamTitle);
 
+        if (index === 2) {
+            teamTitle.textContent = `1º Próxima`
+        }
+        if (index === 3) {
+            teamTitle.textContent = `2º Próxima`
+        }
+        if (index === 4) {
+            teamTitle.textContent = `3º Próxima`
+        }
+        if (index === 5) {
+            teamTitle.textContent = `5º Próxima`
+        }
+
         const playerList = document.createElement('ul');
 
         // Exibir jogadores
         team.players.forEach((player, playerIndex) => {
             const playerItem = document.createElement('li');
             if (player) {
-                playerItem.textContent = `${player.name} ${player.isSetter ? '(Levantador)' : ''} ${player.isFemale ? '(Mulher)' : ''}`;
+                playerItem.textContent = player.name;
+                if (player.isSetter) {
+                    playerItem.classList.add('player-setter');
+                }
+                if (player.isFemale) {
+                    playerItem.classList.add('player-female');
+                }
             } else {
                 playerItem.textContent = 'Vazio';
             }
