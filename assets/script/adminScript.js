@@ -512,7 +512,6 @@ function renderTeams() {
 }
 
 // Adicionando o evento para o botão de popular times
-document.getElementById('populateTeamsButton').addEventListener('click', populateTeams);
 document.getElementById('clearTeams').addEventListener('click', clearTeams)
 
 function populateTeams() {

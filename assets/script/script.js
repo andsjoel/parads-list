@@ -163,7 +163,7 @@ db.collection('teams').doc('currentTeams').onSnapshot((doc) => {
     }
 });
 
-const correctPassword = "$rt52wdf#?"; // Altere para a senha que você deseja
+const correctPassword = "L4ud$?"; // Altere para a senha que você deseja
 
 // Adicionando evento de clique ao botão
 document.getElementById("admBtn").addEventListener("click", function() {

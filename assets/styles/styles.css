@@ -161,6 +161,10 @@ section {
     overflow-y: auto;
 }
 
+#returningTeam {
+    width: 60%;
+}
+
 /* Estilo dos times */
 .team {
     border: 2px solid #000000;
@@ -237,17 +241,19 @@ h3 {
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
+    width: 100%;
 }
 
 /* Estilo para a marcação "X" entre os dois times */
 .playing-teams .versus {
-    margin: 0 20px;
-    font-size: 24px;
+    margin: 0 10px;
+    font-size: 20px;
     font-weight: bold;
 }
 
 /* Botões de vitória */
 .win-button {
+    font-family: 'Minecraftia';
     margin-top: 10px;
     padding: 10px;
     background-color: green;
@@ -256,8 +262,319 @@ h3 {
     cursor: pointer;
     border-radius: 5px;
     transition: background-color 0.2s ease;
+    border: 2px solid black;
+    box-shadow: 5px 5px 0px rgb(0, 0, 0);
 }
 
 .win-button:hover {
     background-color: darkgreen;
 }
+
+#clearTeams {
+    width: 60%;
+    border: 2px solid black;
+    background-color: rgb(255, 0, 0);
+    font-family: 'Start';
+    text-transform: uppercase;
+    font-size: 12px;
+    padding: 5px;
+    box-shadow: 5px 5px 0px rgb(0, 0, 0);
+    color: white;
+}
+
+
+/* ###################### ADM */
+
+#adm {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;   
+    align-items: center;
+    background-color: rgb(252, 91, 91);
+    height: 100vh;
+}
+
+.rules {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+
+
+#playerForm {
+    background-color: #3a6799;
+    width: 80%;
+    padding: 8px 20px;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    margin-top: 15px;
+}
+
+#playerForm input {
+    height: 28px;
+    border-radius: 15px;
+    padding: 0 15px;
+    border: 2px solid black;
+}
+
+label {
+    /* background-color: yellow; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.checkbox-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#playerForm button {
+    /* width: 60%; */
+    border: 2px solid black;
+    background-color: rgb(0, 224, 0);
+    font-family: 'Start';
+    text-transform: uppercase;
+    font-size: 12px;
+    padding: 5px;
+    box-shadow: 5px 5px 0px rgb(0, 0, 0);
+}
+
+/* ######################################################### */
+
+  .checkbox-wrapper-58 input[type="checkbox"] {
+    visibility: hidden;
+    display: none;
+  }
+
+  .checkbox-wrapper-58 *,
+  .checkbox-wrapper-58 ::after,
+  .checkbox-wrapper-58 ::before {
+    box-sizing: border-box;
+  }
+
+  /* The switch - the box around the slider */
+  .checkbox-wrapper-58 .switch {
+    /* Variables */
+    --switch_width: 3em;
+    --switch_height: 1.5em;
+    --thumb_color: #e8e8e8;
+    --track_color: #e8e8e8;
+    --track_active_color: #888;
+    --outline_color: #000;
+    font-size: 17px;
+    position: relative;
+    display: inline-block;
+    width: var(--switch_width);
+    height: var(--switch_height);
+  }
+
+  /* The slider */
+  .checkbox-wrapper-58 .slider {
+    box-sizing: border-box;
+    border: 2px solid var(--outline_color);
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--track_color);
+    transition: .15s;
+    border-radius: var(--switch_height);
+  }
+
+  .checkbox-wrapper-58 .slider:before {
+    box-sizing: border-box;
+    position: absolute;
+    content: "";
+    height: var(--switch_height);
+    width: var(--switch_height);
+    border: 2px solid var(--outline_color);
+    border-radius: 100%;
+    left: -2px;
+    bottom: -2px;
+    background-color: var(--thumb_color);
+    transform: translateY(-0.2em);
+    box-shadow: 0 0.2em 0 var(--outline_color);
+    transition: .15s;
+  }
+
+  .checkbox-wrapper-58 input:checked + .slider {
+    background-color: var(--track_active_color);
+  }
+
+  .checkbox-wrapper-58 input:focus-visible + .slider {
+    box-shadow: 0 0 0 2px var(--track_active_color);
+  }
+
+  /* Raise thumb when hovered */
+  .checkbox-wrapper-58 input:hover + .slider:before {
+    transform: translateY(-0.3em);
+    box-shadow: 0 0.3em 0 var(--outline_color);
+  }
+
+  .checkbox-wrapper-58 input:checked + .slider:before {
+    transform: translateX(calc(var(--switch_width) - var(--switch_height))) translateY(-0.2em);
+  }
+
+  /* Raise thumb when hovered & checked */
+  .checkbox-wrapper-58 input:hover:checked + .slider:before {
+    transform: translateX(calc(var(--switch_width) - var(--switch_height))) translateY(-0.3em);
+    box-shadow: 0 0.3em 0 var(--outline_color);
+  }
+
+  .checkbox-wrapper-58 {
+    margin: 8px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .checkbox-wrapper-55 input[type="checkbox"] {
+    visibility: hidden;
+    display: none;
+  }
+
+  .checkbox-wrapper-55 *,
+  .checkbox-wrapper-55 ::after,
+  .checkbox-wrapper-55 ::before {
+    box-sizing: border-box;
+  }
+
+  .checkbox-wrapper-55 .rocker {
+    display: inline-block;
+    position: relative;
+    /*
+    SIZE OF SWITCH
+    ==============
+    All sizes are in em - therefore
+    changing the font-size here
+    will change the size of the switch.
+    See .rocker-small below as example.
+    */
+    font-size: 2em;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+    color: #888;
+    width: 7em;
+    height: 4em;
+    overflow: hidden;
+    border-bottom: 0.5em solid #eee;
+  }
+
+  .checkbox-wrapper-55 .rocker-small {
+    font-size: 1em;
+  }
+
+  .checkbox-wrapper-55 .rocker::before {
+    content: "";
+    position: absolute;
+    top: 0.5em;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #999;
+    border: 0.5em solid #eee;
+    border-bottom: 0;
+  }
+
+  .checkbox-wrapper-55 .switch-left,
+  .checkbox-wrapper-55 .switch-right {
+    cursor: pointer;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.5em;
+    width: 3em;
+    transition: 0.2s;
+    user-select: none;
+  }
+
+  .checkbox-wrapper-55 .switch-left {
+    height: 2.4em;
+    width: 2.75em;
+    left: 0.85em;
+    bottom: 0.4em;
+    background-color: #ddd;
+    transform: rotate(15deg) skewX(15deg);
+  }
+
+  .checkbox-wrapper-55 .switch-right {
+    right: 0.5em;
+    bottom: 0;
+    background-color: #bd5757;
+    color: #fff;
+  }
+
+  .checkbox-wrapper-55 .switch-left::before,
+  .checkbox-wrapper-55 .switch-right::before {
+    content: "";
+    position: absolute;
+    width: 0.4em;
+    height: 2.45em;
+    bottom: -0.45em;
+    background-color: #ccc;
+    transform: skewY(-65deg);
+  }
+
+  .checkbox-wrapper-55 .switch-left::before {
+    left: -0.4em;
+  }
+
+  .checkbox-wrapper-55 .switch-right::before {
+    right: -0.375em;
+    background-color: transparent;
+    transform: skewY(65deg);
+  }
+
+  .checkbox-wrapper-55 input:checked + .switch-left {
+    background-color: #0084d0;
+    color: #fff;
+    bottom: 0px;
+    left: 0.5em;
+    height: 2.5em;
+    width: 3em;
+    padding: 0 1px;
+    transform: rotate(0deg) skewX(0deg);
+  }
+
+  .checkbox-wrapper-55 input:checked + .switch-left::before {
+    background-color: transparent;
+    width: 3.0833em;
+  }
+
+  .checkbox-wrapper-55 input:checked + .switch-left + .switch-right {
+    background-color: #ddd;
+    color: #888;
+    bottom: 0.4em;
+    right: 0.8em;
+    height: 2.4em;
+    width: 2.75em;
+    transform: rotate(-15deg) skewX(-15deg);
+  }
+
+  .checkbox-wrapper-55 input:checked + .switch-left + .switch-right::before {
+    background-color: #ccc;
+  }
+
+  /* Keyboard Users */
+  .checkbox-wrapper-55 input:focus + .switch-left {
+    color: #333;
+  }
+
+  .checkbox-wrapper-55 input:checked:focus + .switch-left {
+    color: #fff;
+  }
+
+  .checkbox-wrapper-55 input:focus + .switch-left + .switch-right {
+    color: #fff;
+  }
+
+  .checkbox-wrapper-55 input:checked:focus + .switch-left + .switch-right {
+    color: #333;
+  }

@@ -5,43 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Organizador de Times de Vôlei</title>
     <link rel="stylesheet" href="./assets/styles/styles.css">
+    <link rel="stylesheet" href="./assets/styles/test.css">
 </head>
 <body>
-    <header>
-        <img src="./assets/img/bola_logo.png" alt="logo">
-        <nav>
-            <ul>
-                <h2>Parads</h2>
-                <li>
-                    <a href="index.html">Lista</a>
-                </li>
-            </ul>
-        </nav>
-    </header>
     <section id="adm">
-        <button id="populateTeamsButton">Popular Times</button>
-        <button id="clearTeams">Limpar</button>
-        <h1>Parads</h1>
-        <div>
-            <label for="">
+        
+        
+        <!-- <button id="populateTeamsButton">Popular Times</button> -->
+        
+        <div class="rules">
+            <button id="clearTeams">Limpar!!!</button>
+        
+            <div class="checkbox-wrapper-55">
+              <label class="rocker rocker-small">
+                <input type="checkbox" id="onHold">
+                <span class="switch-left">SAI 2</span>
+                <span class="switch-right">NO</span>
+              </label>
+            </div>
+        </div>
+
+
+        
+        <!-- <div>
+            <label>
                 <input type="checkbox" name="" id="onHold">
                 Sai 2
             </label>
-        </div>
+        </div> -->
         <!-- Formulário para adicionar jogadores -->
         <form id="playerForm">
+            
             <label for="playerName">Nome do Jogador:</label>
             <input type="text" id="playerName" autocomplete="off" placeholder="Digite o nome" required>
 
             <div class="checkbox-container">
-                <label>
+                <div class="checkbox-wrapper-58">
+                    <label class="switch">
+                      <input type="checkbox" id="isSetter">
+                      <span class="slider"></span>
+                    </label>
+                    Levantador
+                  </div>
+                  <div class="checkbox-wrapper-58">
+                    <label class="switch">
+                      <input type="checkbox" id="isFemale">
+                      <span class="slider"></span>
+                    </label>
+                    Mulher
+                  </div>
+                <!-- <label>
                     <input type="checkbox" id="isSetter">
                     Levantador
-                </label>
-                <label>
+                </label> -->
+                
+                <!-- <label>
                     <input type="checkbox" id="isFemale">
                     Mulher
-                </label>
+                </label> -->
             </div>
             <button type="submit">Adicionar Jogador</button>
             <button id="removePlayerBtn">Remover Jogador</button>
