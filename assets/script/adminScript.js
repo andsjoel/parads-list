@@ -31,11 +31,17 @@ const returningTeamContainer = document.getElementById('returningTeam') //Div pa
 const removePlayerBtn = document.getElementById('removePlayerBtn');
 const admBtn = document.getElementById('admBtn');
 
+document.getElementById('onHold').addEventListener('change', saveTeamsToFirestore);
+
 db.collection('teams').doc('currentTeams').onSnapshot((doc) => {
     if (doc.exists) {
         const data = doc.data();
         teams = data.teams;
         teamOnHold = data.teamOnHold;
+
+        // Atualiza o estado do checkbox "onHold" com o valor salvo
+        const isRuleActive = data.isRuleActive || false; // Define como false se não houver valor salvo
+        document.getElementById('onHold').checked = isRuleActive;
         
         // Renderizar a lista de times na página
         renderTeams();
@@ -47,16 +53,17 @@ db.collection('teams').doc('currentTeams').onSnapshot((doc) => {
 
 // Função para salvar os times no Firestore
 function saveTeamsToFirestore() {
-    const teamsData = teams.map(team => {
-        return {
-            players: team.players.map(player => player ? {
-                name: player.name,
-                isSetter: player.isSetter,
-                isFemale: player.isFemale
-            } : null),
-            wins: team.wins || 0 // Salvando também a quantidade de vitórias
-        };
-    });
+    const teamsData = teams.map(team => ({
+        players: team.players.map(player => player ? {
+            name: player.name,
+            isSetter: player.isSetter,
+            isFemale: player.isFemale,
+            wins: player.wins || 0 // Inclui as vitórias individuais de cada jogador
+        } : null),
+        wins: team.wins || 0
+    }));
+
+    const isRuleActive = document.getElementById('onHold').checked;
 
     db.collection('teams').doc('currentTeams').set({
         teams: teamsData,
@@ -64,78 +71,63 @@ function saveTeamsToFirestore() {
             players: teamOnHold.players.map(player => player ? {
                 name: player.name,
                 isSetter: player.isSetter,
-                isFemale: player.isFemale
+                isFemale: player.isFemale,
+                wins: player.wins || 0
             } : null),
             wins: teamOnHold.wins || 0
-        } : null
+        } : null,
+        isRuleActive: isRuleActive
     })
     .then(() => {
         console.log("Teams saved successfully!");
     })
-    .catch((error) => {
+    .catch(error => {
         console.error("Error saving teams: ", error);
     });
 }
 
 
+
 function handleWin(winningTeamIndex) {
     const winningTeam = teams[winningTeamIndex];
-    
-    // Incrementa o contador de vitórias do time vencedor
+
+    // Incrementa o contador de vitórias do time e de cada jogador individualmente
     winningTeam.wins = (winningTeam.wins || 0) + 1;
 
-    // Identifica o time perdedor com base no índice do time vencedor
+    winningTeam.players.forEach(player => {
+        if (player) {
+            player.wins = (player.wins || 0) + 1; // Incrementa vitórias do jogador
+        }
+    });
+
     const losingTeamIndex = winningTeamIndex === 0 ? 1 : 0;
     const losingTeam = teams[losingTeamIndex];
-
-    // Redistribui o time perdedor
     redistributeLosingTeam(losingTeam);
 
     const isRuleActive = document.getElementById('onHold').checked;
-
-    // Se há um time em espera
     if (isRuleActive) {
         if (teamOnHold) {
-            // O time que estava em espera volta a jogar contra o time vencedor
             const teamReturning = teamOnHold;
-            teamOnHold = null; // Limpa o time em espera
-    
-            // Reinicia o contador de vitórias do time que estava em espera
+            teamOnHold = null;
             teamReturning.wins = 0;
-    
-            // Remove o time perdedor da lista atual e o coloca no final
-            teams.splice(losingTeamIndex, 1); // Remove o time perdedor da lista atual
-    
-            // O time vencedor continua na lista, pronto para jogar contra o próximo time
-            teams.unshift(teamReturning); // Insere o time que estava em espera no início da lista
-    
-        } else {
-            // Caso contrário, segue o fluxo normal de vitória e derrota
-    
-            // Remove o time perdedor da lista atual e o coloca no final
             teams.splice(losingTeamIndex, 1);
-    
-            // Se o time vencedor venceu duas vezes, ele vai para "volta"
+            teams.unshift(teamReturning);
+        } else {
+            teams.splice(losingTeamIndex, 1);
             if (winningTeam.wins >= 2) {
-                teamOnHold = winningTeam; // Coloca o time vencedor em espera
-
-                // IMPORTANTE: Se o time vencedor for o time que estava no índice 1,
-                // e removermos um time antes, o índice pode mudar. Então garantimos
-                // que sempre estamos removendo o time correto.
-
-                teams.splice(teams.indexOf(winningTeam), 1); // Remove o time vencedor da lista
-                winningTeam.wins = 0; // Reseta o contador de vitórias
+                teamOnHold = winningTeam;
+                teams.splice(teams.indexOf(winningTeam), 1);
+                winningTeam.wins = 0;
             }
         }
     } else {
-        // Quando a regra "onHold" não está ativa
         teams.splice(losingTeamIndex, 1);
     }
 
-    // Atualiza a interface com as mudanças nos times
     renderTeams();
     saveTeamsToFirestore();
 }
+
 
 // Função para selecionar um jogador
 function selectPlayer(player, playerElement) {
@@ -210,6 +202,8 @@ function selectEmptySpace(playerElement, teamIndex, playerIndex) {
 
 // Função para adicionar jogador ao time
 function addPlayerToTeam(player) {
+    player.wins = player.wins || 0;
+
     if (selectedEmptySpace) {
         // Adicionar o jogador ao espaço vazio selecionado
         const team = teams[selectedEmptySpace.teamIndex];
@@ -404,57 +398,36 @@ function createTeamElement(team, title, teamIndex = null) {
 
     const playerList = document.createElement('div');
     playerList.style.display = 'flex';
-    playerList.style.flexDirection = 'column'; // Exibir os jogadores em coluna
+    playerList.style.flexDirection = 'column';
 
-    // Garantir que sempre tenha 6 espaços
     for (let i = 0; i < 6; i++) {
         const playerItem = document.createElement('div');
         playerItem.classList.add('player-space');
 
-        // Verificar se existe jogador para preencher o espaço
         if (team.players[i]) {
             const player = team.players[i];
-            playerItem.textContent = player.name;
-
-            // Se for levantador, aplica classe de cor verde
-            if (player.isSetter) {
-                playerItem.classList.add('player-setter');
-            }
-
-            // Se for mulher, aplica classe de cor lilás
-            if (player.isFemale) {
-                playerItem.classList.add('player-female');
-            }
-
-            // Adicionar evento de clique para selecionar o jogador
+            playerItem.textContent = `${player.name} ${player.wins || 0}`; // Exibe o número de vitórias
+            if (player.isSetter) playerItem.classList.add('player-setter');
+            if (player.isFemale) playerItem.classList.add('player-female');
             playerItem.addEventListener('click', function (event) {
-                event.stopPropagation(); // Impede que o clique seja propagado para o documento
+                event.stopPropagation();
                 selectPlayer(player, playerItem);
             });
-
         } else {
-            // Se não houver jogador, marcar o espaço como vazio
             playerItem.textContent = '?';
             playerItem.classList.add('player-empty');
-
-            // Adicionar evento de clique para selecionar o espaço vazio
             playerItem.addEventListener('click', function (event) {
-                event.stopPropagation(); // Impede que o clique seja propagado para o documento
+                event.stopPropagation();
                 selectEmptySpace(playerItem, teams.indexOf(team), i);
             });
-
-            // Se o espaço vazio estiver selecionado, aplicar o destaque visual
             if (selectedEmptySpace && selectedEmptySpace.teamIndex === teams.indexOf(team) && selectedEmptySpace.playerIndex === i) {
                 playerItem.classList.add('player-empty-selected');
             }
         }
-
         playerList.appendChild(playerItem);
     }
 
     teamDiv.appendChild(playerList);
-
-    // Se for um dos dois primeiros times, adicionar o botão "Venceu"
     if (teamIndex === 0 || teamIndex === 1) {
         const winButton = createWinButton(teamIndex);
         teamDiv.appendChild(winButton);
@@ -462,6 +435,7 @@ function createTeamElement(team, title, teamIndex = null) {
 
     return teamDiv;
 }
+
 
 // Função para renderizar os times atualizada com os botões "Venceu"
 function renderTeams() {

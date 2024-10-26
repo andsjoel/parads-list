@@ -52,23 +52,31 @@ function renderTeamsFromFirestore(teamsData, teamOnHold) {
     teamsContainer.innerHTML = ''; // Limpa o container
 
     if (!teamsData || teamsData.length === 0) {
+        const ballonHq = document.createElement('div');
+        ballonHq.classList.add('ballon-hq');
+
+        const imgHq = document.createElement('img');
+        imgHq.src = '../img/marvelvsdc.png';
+        imgHq.alt = 'Test'
+
         const waitingMessage = document.createElement('h2');
         waitingMessage.textContent = "Waiting for Player One...";
         waitingMessage.classList.add('blink')
-        teamsContainer.appendChild(waitingMessage);
+        // ballonHq.appendChild(imgHq)
+        ballonHq.appendChild(waitingMessage);
 
-        const balloon = document.createElement('div');
-        balloon.classList.add('balloon');
+        teamsContainer.appendChild(ballonHq);
 
-        const waitingCat = document.createElement('img');
-        waitingCat.src = './assets/img/balloon_cat.gif';
-        waitingCat.classList.add('cat-wait')
-        balloon.appendChild(waitingCat);
+        // const balloon = document.createElement('div');
+        // balloon.classList.add('balloon');
+
+        // const waitingCat = document.createElement('img');
+        // waitingCat.src = './assets/img/balloon_cat.gif';
+        // waitingCat.classList.add('cat-wait')
+        // balloon.appendChild(waitingCat);
 
         const balao = document.createElement('p');
 
-        balao.textContent = 'Achou que ia estourar meu balão? Sou só um Gif!'
-        balao.style.display = 'none';
 
         balloon.appendChild(balao)
 
@@ -90,6 +98,8 @@ function renderTeamsFromFirestore(teamsData, teamOnHold) {
         teamsContainer.appendChild(balloon);
         return;
     }
+
+    // ############
 
     teamsData.forEach((team, index) => {
         const teamDiv = document.createElement('div');
@@ -116,10 +126,15 @@ function renderTeamsFromFirestore(teamsData, teamOnHold) {
 
         // Exibir jogadores
         team.players.forEach((player, playerIndex) => {
-            const playerItem = document.createElement('li');
+            const playerItem = document.createElement('div');
+            const playerName = document.createElement('p');
+            const playerWins = document.createElement('span')
             playerItem.classList.add('player-space');
             if (player) {
-                playerItem.textContent = player.name;
+                playerName.textContent = player.name;
+                playerWins.textContent = player.wins;
+                playerItem.appendChild(playerName)
+                playerItem.appendChild(playerWins)
                 if (player.isSetter) {
                     playerItem.classList.add('player-setter');
                 }

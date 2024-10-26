@@ -101,8 +101,23 @@ header button {
 
 /* Container principal */
 
+.ballon-hq {
+  background-image: url(../img/marvelvsdc.png);
+  background-size: contain;
+  /* background-repeat: no-repeat; */
+  background-position: center;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .blink {
     animation: blink 1s steps(1, end) infinite;
+    color: #000;
+    background-color: white;
+    padding: 0 8px;
   }
   
   @keyframes blink {
@@ -192,11 +207,29 @@ h3 {
 
 /* Estilo das listas de jogadores */
 .player-space {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 8px;
     margin: 3px 0;
     border: 1px solid #e00202;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.2s ease;
+}
+
+.player-space span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: gold;
+  border: 1px solid black;
+  width: 20px;
+  height: 20px;
+  /* border-radius: 50%; */
+  color: white;
+  text-align: center;
+  text-shadow: 1px 1px 1px #000000;
 }
 
 /* Espaço vazio */
