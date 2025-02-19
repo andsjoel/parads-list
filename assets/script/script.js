@@ -1,10 +1,6 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.6/firebase-app.js";
 
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyA1O3YGQV1Up0n-wYXn34NyzMx0RT7NOL0",
   authDomain: "parads-list.firebaseapp.com",
@@ -14,92 +10,27 @@ const firebaseConfig = {
   appId: "1:502581426851:web:9374424441ce1bddc71d16"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 const teamsContainer = document.getElementById('teamsContainer');
 const onHoldContainer = document.getElementById('onHoldTeam');
-const waitingPlayer = document.getElementById('waitingPlayer');
 
-let countBalloon = 0;
-let balaoVisivel = false;
 
-const falas = [
-    "Achou que ia estourar meu balão? Sou apenas um Gif, trouxa.",
-    "Sabe como um Gif funciona?",
-    "Nem eu.",
-    "Ainda nessa?",
-    "Podemos ficar aqui o dia todo...",
-    "Cadê os adm?",
-    "...",
-    "Meow Meow",
-    "Não da pra estourar, você sabe né?",
-    "Mesmo que desse...",
-    "BUUM! Brincadeira.",
-    "Eita, senti balançando.",
-    "Ta, sério. Cadê os adm???",
-    "Para aê ow, brother.",
-    "Brincadeira. Parei.",
-    "PARA!",
-    "AAAAAAAA",
-    "EU VOU MORRER!",
-    "Meow?"
-];
-
-function renderTeamsFromFirestore(teamsData, teamOnHold) {
-
-    teamsContainer.innerHTML = ''; // Limpa o container
+function renderTeamsFromFirestore(teamsData) {
+    teamsContainer.innerHTML = '';
 
     if (!teamsData || teamsData.length === 0) {
-        const ballonHq = document.createElement('div');
-        ballonHq.classList.add('ballon-hq');
-
-        const imgHq = document.createElement('img');
-        imgHq.src = '../img/marvelvsdc.png';
-        imgHq.alt = 'Test'
-
+        const waitDiv = document.createElement('div');
+        waitDiv.classList.add('waitDiv');
         const waitingMessage = document.createElement('h2');
-        waitingMessage.textContent = "Waiting for Player One...";
+        waitingMessage.textContent = "Press Start...";
         waitingMessage.classList.add('blink')
-        // ballonHq.appendChild(imgHq)
-        ballonHq.appendChild(waitingMessage);
+        waitDiv.appendChild(waitingMessage);
+        teamsContainer.appendChild(waitDiv);
 
-        teamsContainer.appendChild(ballonHq);
-
-        // const balloon = document.createElement('div');
-        // balloon.classList.add('balloon');
-
-        // const waitingCat = document.createElement('img');
-        // waitingCat.src = './assets/img/balloon_cat.gif';
-        // waitingCat.classList.add('cat-wait')
-        // balloon.appendChild(waitingCat);
-
-        const balao = document.createElement('p');
-
-
-        balloon.appendChild(balao)
-
-        balloon.addEventListener('click', () => {
-            if (!balaoVisivel && countBalloon < falas.length) { // Verifica se o balão não está visível
-                balaoVisivel = true; // Marca que o balão está visível
-                balao.textContent = falas[countBalloon]; // Atualiza o texto do balão com a fala atual
-                balao.style.display = 'block'; // Mostra o balão
-                setTimeout(() => {
-                    balao.style.display = 'none'; // Esconde o balão após 2.5 segundos
-                    balaoVisivel = false; // Marca que o balão não está mais visível
-                }, 2500); // O balão ficará visível por 2 segundos
-                countBalloon++; // Incrementa o índice para a próxima fala
-            } else if (countBalloon >= falas.length) {
-                countBalloon = 0; // Reseta o índice se chegar ao final
-            }
-        });
-
-        teamsContainer.appendChild(balloon);
         return;
     }
-
-    // ############
 
     teamsData.forEach((team, index) => {
         const teamDiv = document.createElement('div');
@@ -124,73 +55,63 @@ function renderTeamsFromFirestore(teamsData, teamOnHold) {
 
         const playerList = document.createElement('ul');
 
-        // Exibir jogadores
-        team.players.forEach((player, playerIndex) => {
+        for (let i = 0; i < 6; i++) {
             const playerItem = document.createElement('div');
-            const playerName = document.createElement('p');
-            const playerWins = document.createElement('span')
             playerItem.classList.add('player-space');
-            if (player) {
-                playerName.textContent = player.name;
-                playerWins.textContent = player.wins;
-                playerItem.appendChild(playerName)
+    
+            if (team.players[i]) {
+                const player = team.players[i];
+                const playerName = `${player.name}`;
+                const tagP = document.createElement('p');
+                tagP.textContent = playerName;
+                const playerWins = document.createElement('span');
+                playerWins.textContent = `${player.wins}`
+    
+                playerItem.appendChild(tagP);
                 playerItem.appendChild(playerWins)
-                if (player.isSetter) {
-                    playerItem.classList.add('player-setter');
-                }
-                if (player.isFemale) {
-                    playerItem.classList.add('player-female');
-                }
+    
+                if (player.isSetter) playerItem.classList.add('player-setter');
+                if (player.isFemale) playerItem.classList.add('player-female');
+                playerItem.addEventListener('click', function (event) {
+                    event.stopPropagation();
+                    selectPlayer(player, playerItem);
+                });
             } else {
-                playerItem.textContent = 'Vazio';
+                playerItem.textContent = 'ʕ•́ᴥ•̀ʔっ';
+                playerItem.classList.add('player-empty');
+                playerItem.addEventListener('click', function (event) {
+                    event.stopPropagation();
+                    selectEmptySpace(playerItem, teams.indexOf(team), i);
+                });
             }
             playerList.appendChild(playerItem);
-        });
-
+        }
         teamDiv.appendChild(playerList);
         teamsContainer.appendChild(teamDiv);
     });
-
-    if (teamOnHold) {
-        console.log('TIME',teamOnHold);
-
-        onHoldContainer.innerHTML = '<h3>Time de Volta</h3>';
-        teamOnHold.players.forEach((player, index) => {
-            const playerItem = document.createElement('p');
-            playerItem.textContent = player.name;
-            onHoldContainer.appendChild(playerItem);
-        });
-        console.log(onHoldContainer);
-    }
 }
 
-// Escutar mudanças no Firestore
 db.collection('teams').doc('currentTeams').onSnapshot((doc) => {
     if (doc.exists) {
         const data = doc.data();
         const teamsData = data.teams;
         const teamOnHold = data.teamOnHold;
         
-        // Renderizar a lista de times na página
         renderTeamsFromFirestore(teamsData, teamOnHold);
     } else {
         console.log("No teams data found!");
     }
 });
 
-const correctPassword = "L4ud$?"; // Altere para a senha que você deseja
+const correctPassword = "parad$";
 
-// Adicionando evento de clique ao botão
 document.getElementById("admBtn").addEventListener("click", function() {
     const inputPass = document.getElementById("admPass").value;
 
-    // Verifica se a senha inserida está correta
     if (inputPass === correctPassword) {
         localStorage.setItem("isAdmin", "true");
-        // Se correta, redireciona para a página de administrador
         window.location.href = "adm.html";
     } else {
-        // Senha incorreta, exibe uma mensagem de erro
         alert("Senha incorreta!");
     }
 });

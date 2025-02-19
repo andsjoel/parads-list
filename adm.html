@@ -3,76 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Organizador de Times de Vôlei</title>
+    <title>ADM - Parads</title>
     <link rel="stylesheet" href="./assets/styles/styles.css">
-    <link rel="stylesheet" href="./assets/styles/test.css">
 </head>
 <body>
     <section id="adm">
-        
-        
-        <!-- <button id="populateTeamsButton">Popular Times</button> -->
+
+      <header>
+        <button>LIMPAR</button>
+        <!-- <button>SAIDEIRA</button> -->
+        <button>DESFAZER</button>
+      </header>
+        <button id="clearTeams">Limpar!!!</button>
+        <button id="populateTeamsButton">Popular Times</button>
         
         <div class="rules">
-            <button id="clearTeams">Limpar!!!</button>
-        
             <div class="checkbox-wrapper-55">
+              <p>Sai 2 TIMES:</p>
               <label class="rocker rocker-small">
                 <input type="checkbox" id="onHold">
-                <span class="switch-left">SAI 2</span>
-                <span class="switch-right">NO</span>
+                <span class="switch-left">SIM</span>
+                <span class="switch-right">NÃO</span>
+              </label>
+            </div>
+            <div class="checkbox-wrapper-55">
+              <p>Duas Mulheres por TIME:</p>
+              <label class="rocker rocker-small">
+                <input type="checkbox" id="twoWoman">
+                <span class="switch-left">SIM</span>
+                <span class="switch-right">NÃO</span>
               </label>
             </div>
         </div>
 
-
-        
-        <!-- <div>
-            <label>
-                <input type="checkbox" name="" id="onHold">
-                Sai 2
-            </label>
-        </div> -->
-        <!-- Formulário para adicionar jogadores -->
-        <form id="playerForm">
-            
-            <label for="playerName">Nome do Jogador:</label>
-            <input type="text" id="playerName" autocomplete="off" placeholder="Digite o nome" required>
-
-            <div class="checkbox-container">
-                <div class="checkbox-wrapper-58">
-                    <label class="switch">
-                      <input type="checkbox" id="isSetter">
-                      <span class="slider"></span>
-                    </label>
-                    Levantador
-                  </div>
-                  <div class="checkbox-wrapper-58">
-                    <label class="switch">
-                      <input type="checkbox" id="isFemale">
-                      <span class="slider"></span>
-                    </label>
-                    Mulher
-                  </div>
-                <!-- <label>
-                    <input type="checkbox" id="isSetter">
-                    Levantador
-                </label> -->
-                
-                <!-- <label>
-                    <input type="checkbox" id="isFemale">
-                    Mulher
-                </label> -->
-            </div>
-            <button type="submit">Adicionar Jogador</button>
-            <button id="removePlayerBtn">Remover Jogador</button>
-        </form>
-
-        <!-- Seção para exibir os times -->
         <div id="teamsContainer">
             <div id="returningTeam"></div>
             <div id="teams"></div>
         </div>
+
+        <footer>
+            <form id="playerForm">
+            
+                <label for="playerName">Nome do Jogador:</label>
+                <input type="text" id="playerName" autocomplete="off" placeholder="Digite o nome" required>
+    
+                <div class="checkbox-container">
+                    <div class="checkbox-wrapper-58">
+                        <label class="switch">
+                          <input type="checkbox" id="isSetter">
+                          <span class="slider"></span>
+                        </label>
+                        Levantador
+                      </div>
+                      <div class="checkbox-wrapper-58">
+                        <label class="switch">
+                          <input type="checkbox" id="isFemale">
+                          <span class="slider"></span>
+                        </label>
+                        Mulher
+                      </div>
+                </div>
+                <button type="submit">Adicionar Jogador</button>
+                <button id="removePlayerBtn">Remover Jogador</button>
+            </form>
+        </footer>
         
     </section>
 

@@ -1,10 +1,5 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.6/firebase-app.js";
 
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyA1O3YGQV1Up0n-wYXn34NyzMx0RT7NOL0",
   authDomain: "parads-list.firebaseapp.com",
@@ -14,22 +9,19 @@ const firebaseConfig = {
   appId: "1:502581426851:web:9374424441ce1bddc71d16"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-let teams = []; // Armazena os times criados
-let selectedPlayer = null; // Jogador ou espaço vazio selecionado
-let selectedEmptySpace = null; // Referência para o espaço vazio selecionado
-let countWin = 0;
+let teams = [];
+let selectedPlayer = null;
+let selectedEmptySpace = null;
 let teamOnHold = null;
 
-// Referência ao formulário de adicionar jogador
 const playerForm = document.getElementById('playerForm');
 const teamsContainer = document.getElementById('teams');
 const returningTeamContainer = document.getElementById('returningTeam') //Div para exibir o time que volta
-const removePlayerBtn = document.getElementById('removePlayerBtn');
-const admBtn = document.getElementById('admBtn');
+// const removePlayerBtn = document.getElementById('removePlayerBtn');
+// const admBtn = document.getElementById('admBtn');
 
 document.getElementById('onHold').addEventListener('change', saveTeamsToFirestore);
 
@@ -39,31 +31,32 @@ db.collection('teams').doc('currentTeams').onSnapshot((doc) => {
         teams = data.teams;
         teamOnHold = data.teamOnHold;
 
-        // Atualiza o estado do checkbox "onHold" com o valor salvo
-        const isRuleActive = data.isRuleActive || false; // Define como false se não houver valor salvo
-        document.getElementById('onHold').checked = isRuleActive;
-        
-        // Renderizar a lista de times na página
+        const isRuleActiveHold = data.isRuleActiveHold || false;
+        const isRuleActiveWoman = data.isRuleActiveWoman || false;
+
+        document.getElementById('onHold').checked = isRuleActiveHold;
+        document.getElementById('twoWoman').checked = isRuleActiveWoman;
+
         renderTeams();
-        // saveTeamsToFirestore();
     } else {
         console.log("No teams data found!");
     }
 });
 
-// Função para salvar os times no Firestore
 function saveTeamsToFirestore() {
     const teamsData = teams.map(team => ({
         players: team.players.map(player => player ? {
             name: player.name,
             isSetter: player.isSetter,
             isFemale: player.isFemale,
-            wins: player.wins || 0 // Inclui as vitórias individuais de cada jogador
+            wins: player.wins || 0
         } : null),
         wins: team.wins || 0
     }));
 
-    const isRuleActive = document.getElementById('onHold').checked;
+    const isRuleActiveHold = document.getElementById('onHold').checked;
+    const isRuleActiveWoman = document.getElementById('twoWoman').checked;
+
 
     db.collection('teams').doc('currentTeams').set({
         teams: teamsData,
@@ -76,7 +69,8 @@ function saveTeamsToFirestore() {
             } : null),
             wins: teamOnHold.wins || 0
         } : null,
-        isRuleActive: isRuleActive
+        isRuleActiveHold: isRuleActiveHold,
+        isRuleActiveWoman: isRuleActiveWoman
     })
     .then(() => {
         console.log("Teams saved successfully!");
@@ -104,8 +98,8 @@ function handleWin(winningTeamIndex) {
     const losingTeam = teams[losingTeamIndex];
     redistributeLosingTeam(losingTeam);
 
-    const isRuleActive = document.getElementById('onHold').checked;
-    if (isRuleActive) {
+    const isRuleActiveHold = document.getElementById('onHold').checked;
+    if (isRuleActiveHold) {
         if (teamOnHold) {
             const teamReturning = teamOnHold;
             teamOnHold = null;
@@ -406,15 +400,57 @@ function createTeamElement(team, title, teamIndex = null) {
 
         if (team.players[i]) {
             const player = team.players[i];
-            playerItem.textContent = `${player.name} ${player.wins || 0}`; // Exibe o número de vitórias
+            const playerName = `${player.name}`;
+            const tagP = document.createElement('p');
+            tagP.textContent = playerName;
+            const tagSpan = document.createElement('span');
+            tagSpan.textContent = `${player.wins}`
+
+            const btnDelete = document.createElement('button');
+            btnDelete.textContent = '✖'
+            btnDelete.id = 'removePlayerBtn';
+
+            playerItem.appendChild(tagP);
+            playerItem.appendChild(tagSpan)
+            playerItem.appendChild(btnDelete);
+
             if (player.isSetter) playerItem.classList.add('player-setter');
             if (player.isFemale) playerItem.classList.add('player-female');
             playerItem.addEventListener('click', function (event) {
                 event.stopPropagation();
                 selectPlayer(player, playerItem);
+                tagSpan.style.display = 'none'
+
+                btnDelete.id = 'removePlayerBtnShow'
+                btnDelete.addEventListener('click', function() {
+                    const confirmDelete = confirm(`Deseja remover ${player.name}?`);
+
+                    if (confirmDelete) {
+                        if (selectedPlayer) {
+                            for (let team of teams) {
+                                const playerIndex = team.players.indexOf(selectedPlayer.player);
+                                
+                                if (playerIndex !== -1) {
+                                    team.players.splice(playerIndex, 1);
+                                    selectedPlayer = null;
+                                    break;
+                                }
+                            }
+                    
+                            selectedPlayer = null;
+                            this.style.display = 'none';
+                    
+                            reRender(teams);
+                    
+                            setTimeout(() => {
+                                selectedPlayer = null;
+                            }, 100);
+                        }
+                    }
+                })
             });
         } else {
-            playerItem.textContent = '?';
+            playerItem.textContent = 'ʕ•́ᴥ•̀ʔっ';
             playerItem.classList.add('player-empty');
             playerItem.addEventListener('click', function (event) {
                 event.stopPropagation();
@@ -465,10 +501,10 @@ function renderTeams() {
         playingTeamsContainer.appendChild(team1Div);
 
         // Adicionar o "X" entre os dois times
-        const vsDiv = document.createElement('div');
-        vsDiv.classList.add('versus');
-        vsDiv.textContent = 'X';
-        playingTeamsContainer.appendChild(vsDiv);
+        // const vsDiv = document.createElement('div');
+        // vsDiv.classList.add('versus');
+        // vsDiv.textContent = 'X';
+        // playingTeamsContainer.appendChild(vsDiv);
 
         if (team2Div) {
             playingTeamsContainer.appendChild(team2Div);
@@ -487,6 +523,7 @@ function renderTeams() {
 
 // Adicionando o evento para o botão de popular times
 document.getElementById('clearTeams').addEventListener('click', clearTeams)
+document.getElementById('populateTeamsButton').addEventListener('click', populateTeams)
 
 function populateTeams() {
     mockPlayers.forEach(player => {
