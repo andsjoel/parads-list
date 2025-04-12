@@ -487,6 +487,8 @@ function renderTeams() {
 
 // Adicionando o evento para o botão de popular times
 document.getElementById('clearTeams').addEventListener('click', clearTeams)
+document.getElementById('populateTeamsButton').addEventListener('click', populateTeams)
+
 
 function populateTeams() {
     mockPlayers.forEach(player => {
