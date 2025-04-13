@@ -1,10 +1,5 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.6/firebase-app.js";
 
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyA1O3YGQV1Up0n-wYXn34NyzMx0RT7NOL0",
   authDomain: "parads-list.firebaseapp.com",
@@ -14,22 +9,23 @@ const firebaseConfig = {
   appId: "1:502581426851:web:9374424441ce1bddc71d16"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 let teams = []; // Armazena os times criados
 let selectedPlayer = null; // Jogador ou espaço vazio selecionado
 let selectedEmptySpace = null; // Referência para o espaço vazio selecionado
-let countWin = 0;
 let teamOnHold = null;
+let backupUndo = [];
 
 // Referência ao formulário de adicionar jogador
 const playerForm = document.getElementById('playerForm');
 const teamsContainer = document.getElementById('teams');
 const returningTeamContainer = document.getElementById('returningTeam') //Div para exibir o time que volta
-const removePlayerBtn = document.getElementById('removePlayerBtn');
-const admBtn = document.getElementById('admBtn');
+const womansRule = document.getElementById('womans');
+const undoBtn = document.getElementById('undoTeams');
+// const removePlayerBtn = document.getElementById('removePlayerBtn');
+// const admBtn = document.getElementById('admBtn');
 
 document.getElementById('onHold').addEventListener('change', saveTeamsToFirestore);
 
@@ -41,7 +37,9 @@ db.collection('teams').doc('currentTeams').onSnapshot((doc) => {
 
         // Atualiza o estado do checkbox "onHold" com o valor salvo
         const isRuleActive = data.isRuleActive || false; // Define como false se não houver valor salvo
+        const womansRule = data.womansRule || false;
         document.getElementById('onHold').checked = isRuleActive;
+        document.getElementById('womans').checked = womansRule;
         
         // Renderizar a lista de times na página
         renderTeams();
@@ -58,125 +56,140 @@ function saveTeamsToFirestore() {
             name: player.name,
             isSetter: player.isSetter,
             isFemale: player.isFemale,
-            wins: player.wins || 0 // Inclui as vitórias individuais de cada jogador
+            wins: player.wins || 0
         } : null),
         wins: team.wins || 0
     }));
 
     const isRuleActive = document.getElementById('onHold').checked;
+    const womansRule = document.getElementById('womans').checked;
 
-    db.collection('teams').doc('currentTeams').set({
-        teams: teamsData,
-        teamOnHold: teamOnHold ? {
-            players: teamOnHold.players.map(player => player ? {
-                name: player.name,
-                isSetter: player.isSetter,
-                isFemale: player.isFemale,
-                wins: player.wins || 0
-            } : null),
-            wins: teamOnHold.wins || 0
-        } : null,
-        isRuleActive: isRuleActive
-    })
-    .then(() => {
-        console.log("Teams saved successfully!");
-    })
-    .catch(error => {
-        console.error("Error saving teams: ", error);
-    });
+    db.collection('teams').doc('currentTeams').get()
+        .then(doc => {
+            if (doc.exists) {
+                const data = doc.data();
+                backupUndo = data; // Faz o backup antes de salvar
+            }
+
+            return db.collection('teams').doc('currentTeams').set({
+                teams: teamsData,
+                teamOnHold: teamOnHold ? {
+                    players: teamOnHold.players.map(player => player ? {
+                        name: player.name,
+                        isSetter: player.isSetter,
+                        isFemale: player.isFemale,
+                        wins: player.wins || 0
+                    } : null),
+                    wins: teamOnHold.wins || 0
+                } : null,
+                isRuleActive: isRuleActive,
+                womansRule: womansRule
+            });
+        })
+        .then(() => {
+            console.log("Teams saved successfully!");
+        })
+        .catch(error => {
+            console.error("Error saving teams: ", error);
+        });
 }
 
+undoBtn.addEventListener('click', function () {
+    if (backupUndo && Array.isArray(backupUndo.teams)) {
+        reRender(backupUndo.teams);
+    } else {
+        console.warn("Sem backup disponível ou em formato inválido.");
+    }
+});
 
 
 function handleWin(winningTeamIndex) {
     const winningTeam = teams[winningTeamIndex];
+    const confirmVictory = confirm(`O time de ${winningTeam.players[0].name} GANHOU! O Time perdedor irá para o final da lista.`)
 
-    // Incrementa o contador de vitórias do time e de cada jogador individualmente
-    winningTeam.wins = (winningTeam.wins || 0) + 1;
+    if(confirmVictory) {
+        winningTeam.wins = (winningTeam.wins || 0) + 1;
 
-    winningTeam.players.forEach(player => {
-        if (player) {
-            player.wins = (player.wins || 0) + 1; // Incrementa vitórias do jogador
-        }
-    });
-
-    const losingTeamIndex = winningTeamIndex === 0 ? 1 : 0;
-    const losingTeam = teams[losingTeamIndex];
-    redistributeLosingTeam(losingTeam);
-
-    const isRuleActive = document.getElementById('onHold').checked;
-    if (isRuleActive) {
-        if (teamOnHold) {
-            const teamReturning = teamOnHold;
-            teamOnHold = null;
-            teamReturning.wins = 0;
-            teams.splice(losingTeamIndex, 1);
-            teams.unshift(teamReturning);
+        winningTeam.players.forEach(player => {
+            if (player) {
+                player.wins = (player.wins || 0) + 1; // Incrementa vitórias do jogador
+            }
+        });
+    
+        const losingTeamIndex = winningTeamIndex === 0 ? 1 : 0;
+        const losingTeam = teams[losingTeamIndex];
+        redistributeLosingTeam(losingTeam);
+    
+        const isRuleActive = document.getElementById('onHold').checked;
+        if (isRuleActive) {
+            if (teamOnHold) {
+                const teamReturning = teamOnHold;
+                teamOnHold = null;
+                teamReturning.wins = 0;
+                teams.splice(losingTeamIndex, 1);
+                teams.unshift(teamReturning);
+            } else {
+                teams.splice(losingTeamIndex, 1);
+                if (winningTeam.wins >= 2) {
+                    teamOnHold = winningTeam;
+                    teams.splice(teams.indexOf(winningTeam), 1);
+                    winningTeam.wins = 0;
+                }
+            }
         } else {
             teams.splice(losingTeamIndex, 1);
-            if (winningTeam.wins >= 2) {
-                teamOnHold = winningTeam;
-                teams.splice(teams.indexOf(winningTeam), 1);
-                winningTeam.wins = 0;
-            }
         }
-    } else {
-        teams.splice(losingTeamIndex, 1);
     }
 
     renderTeams();
     saveTeamsToFirestore();
 }
 
+womansRule.addEventListener('click', saveTeamsToFirestore);
 
-// Função para selecionar um jogador
+
 function selectPlayer(player, playerElement) {
-    // Se já houver um jogador selecionado
     if (selectedPlayer) {
-        // Se o jogador selecionado é o mesmo que o já selecionado, não faz nada
         if (selectedPlayer.player === player) {
+            selectedPlayer.element.classList.remove('player-selected');
+            selectedPlayer = null;
+
+            renderTeams();
             return;
         }
 
-        // Pergunta de confirmação para trocar os jogadores
         const confirmSwap = confirm(`Deseja trocar ${selectedPlayer.player.name} por ${player.name}?`);
         if (confirmSwap) {
             swapPlayers(selectedPlayer.player, player);
+            selectedPlayer.element.classList.remove('player-selected');
+            selectedPlayer = null;
+            renderTeams();
+        } else {
+            selectedPlayer.element.classList.remove('player-selected');
+            selectedPlayer = null;
+            renderTeams();
         }
 
-        // Desmarcar jogador selecionado após a confirmação
-        selectedPlayer.element.classList.remove('player-selected');
-        selectedPlayer = null;
-
-        // Atualiza a interface
-        renderTeams();
         return;
     }
 
-    // Desmarcar espaço vazio, se houver
     if (selectedEmptySpace) {
         selectedEmptySpace.element.classList.remove('player-empty-selected');
         selectedEmptySpace = null;
     }
 
-    // Marcar o novo jogador como selecionado
     selectedPlayer = { player: player, element: playerElement };
     playerElement.classList.add('player-selected');
-
-    // Exibir o botão de remover
-    document.getElementById('removePlayerBtn').style.display = 'block';
 }
 
 // Função para trocar jogadores
 function swapPlayers(playerA, playerB) {
-    // Encontrar os times e índices dos jogadores
     const teamAIndex = teams.findIndex(team => team.players.includes(playerA));
     const teamBIndex = teams.findIndex(team => team.players.includes(playerB));
 
     const playerAIndex = teams[teamAIndex].players.indexOf(playerA);
     const playerBIndex = teams[teamBIndex].players.indexOf(playerB);
 
-    // Trocar os jogadores
     teams[teamAIndex].players[playerAIndex] = playerB;
     teams[teamBIndex].players[playerBIndex] = playerA;
     saveTeamsToFirestore();
@@ -184,20 +197,19 @@ function swapPlayers(playerA, playerB) {
 
 // Função para selecionar um espaço vazio
 function selectEmptySpace(playerElement, teamIndex, playerIndex) {
-    // Se já houver um espaço vazio selecionado, desmarcar
     if (selectedEmptySpace) {
         selectedEmptySpace.element.classList.remove('player-empty-selected');
     }
 
-    // Desmarcar jogador, se houver
     if (selectedPlayer) {
         selectedPlayer.element.classList.remove('player-selected');
         selectedPlayer = null;
     }
 
-    // Marcar o espaço vazio como selecionado
     selectedEmptySpace = { element: playerElement, teamIndex: teamIndex, playerIndex: playerIndex };
     playerElement.classList.add('player-empty-selected');
+
+    renderTeams();
 }
 
 // Função para adicionar jogador ao time
@@ -205,15 +217,12 @@ function addPlayerToTeam(player) {
     player.wins = player.wins || 0;
 
     if (selectedEmptySpace) {
-        // Adicionar o jogador ao espaço vazio selecionado
         const team = teams[selectedEmptySpace.teamIndex];
         team.players[selectedEmptySpace.playerIndex] = player;
 
-        // Limpar a seleção de espaço vazio
         selectedEmptySpace.element.classList.remove('player-empty-selected');
         selectedEmptySpace = null;
     } else {
-        // Adiciona o jogador a um time da forma normal (primeiro time com vaga)
         for (let team of teams) {
             if (canAddPlayerToTeam(team, player)) {
                 team.players.push(player);
@@ -221,52 +230,30 @@ function addPlayerToTeam(player) {
             }
         }
 
-        // Se não encontrar time, cria um novo
         const newTeam = { players: [] };
         newTeam.players.push(player);
         teams.push(newTeam);
     }
-    saveTeamsToFirestore();
 }
 
 // Função para verificar se o jogador pode ser adicionado a um time
 function canAddPlayerToTeam(team, player) {
     const isSetterInTeam = team.players.some(p => p && p.isSetter);
     const isFemaleInTeam = team.players.some(p => p && p.isFemale);
+    const countFemaleInTeam = team.players.filter(p => p && p.isFemale).length;
 
     const teamNotFull = team.players.length < 6;
 
-    // Regras para adicionar um jogador:
-    // - O time deve ter menos de 6 jogadores
-    // - Só pode ter um levantador e uma mulher no time
     if (!teamNotFull) return false;
     if (player.isSetter && isSetterInTeam) return false;
-    if (player.isFemale && isFemaleInTeam) return false;
+    if(womansRule.checked) {
+        if (player.isFemale && countFemaleInTeam >= 2) return false;
+    } else {
+        if (player.isFemale && isFemaleInTeam) return false;
+    }
 
     return true;
 }
-
-// Função para remover o jogador selecionado
-document.getElementById('removePlayerBtn').addEventListener('click', function () {
-    if (selectedPlayer) {
-        // Encontrar o time e remover o jogador
-        for (let team of teams) {
-            const playerIndex = team.players.indexOf(selectedPlayer.player);
-            if (playerIndex !== -1) {
-                team.players.splice(playerIndex, 1);
-                break;
-            }
-        }
-
-        // Limpar seleção e esconder botão de remover
-        selectedPlayer = null;
-        this.style.display = 'none';
-
-        // Re-renderizar os times
-        renderTeams();
-        saveTeamsToFirestore();
-    }
-});
 
 // Função para adicionar jogador ao formulário
 playerForm.addEventListener('submit', function (e) {
@@ -291,22 +278,22 @@ playerForm.addEventListener('submit', function (e) {
 });
 
 // Detecta cliques fora dos jogadores e espaços vazios para desmarcar seleção
-document.addEventListener('click', function () {
-    // Desmarcar jogador selecionado
-    if (selectedPlayer) {
-        selectedPlayer.element.classList.remove('player-selected');
-        selectedPlayer = null;
-    }
+// document.addEventListener('click', function () {
+//     // Desmarcar jogador selecionado
+//     if (selectedPlayer) {
+//         selectedPlayer.element.classList.remove('player-selected');
+//         selectedPlayer = null;
+//     }
 
-    // Desmarcar espaço vazio selecionado
-    if (selectedEmptySpace) {
-        selectedEmptySpace.element.classList.remove('player-empty-selected');
-        selectedEmptySpace = null;
-    }
+//     // Desmarcar espaço vazio selecionado
+//     if (selectedEmptySpace) {
+//         selectedEmptySpace.element.classList.remove('player-empty-selected');
+//         selectedEmptySpace = null;
+//     }
 
-    // Esconder o botão de remover se nenhum jogador estiver selecionado
-    document.getElementById('removePlayerBtn').style.display = 'none';
-});
+//     // Esconder o botão de remover se nenhum jogador estiver selecionado
+//     document.getElementById('removePlayerBtn').style.display = 'none';
+// });
 
 // Função para redistribuir o time perdedor
 function redistributeLosingTeam(losingTeam) {
@@ -406,15 +393,58 @@ function createTeamElement(team, title, teamIndex = null) {
 
         if (team.players[i]) {
             const player = team.players[i];
-            playerItem.textContent = `${player.name} ${player.wins || 0}`; // Exibe o número de vitórias
+            const playerName = `${player.name}`;
+            const tagP = document.createElement('p');
+            tagP.textContent = playerName;
+            const tagSpan = document.createElement('span');
+            tagSpan.textContent = `${player.wins}`
+
+            const btnDelete = document.createElement('button');
+            btnDelete.textContent = '✖'
+            btnDelete.id = 'removePlayerBtn';
+
+            playerItem.appendChild(tagP);
+            playerItem.appendChild(tagSpan)
+            playerItem.appendChild(btnDelete);
+
+
             if (player.isSetter) playerItem.classList.add('player-setter');
             if (player.isFemale) playerItem.classList.add('player-female');
             playerItem.addEventListener('click', function (event) {
                 event.stopPropagation();
                 selectPlayer(player, playerItem);
+                tagSpan.style.display = 'none'
+
+                btnDelete.id = 'removePlayerBtnShow'
+                btnDelete.addEventListener('click', function() {
+                    const confirmDelete = confirm(`Deseja remover ${player.name}?`);
+
+                    if (confirmDelete) {
+                        if (selectedPlayer) {
+                            for (let team of teams) {
+                                const playerIndex = team.players.indexOf(selectedPlayer.player);
+                                
+                                if (playerIndex !== -1) {
+                                    team.players.splice(playerIndex, 1);
+                                    selectedPlayer = null;
+                                    break;
+                                }
+                            }
+                    
+                            selectedPlayer = null;
+                            this.style.display = 'none';
+                    
+                            reRender(teams);
+                    
+                            setTimeout(() => {
+                                selectedPlayer = null;
+                            }, 100);
+                        }
+                    }
+                })
             });
         } else {
-            playerItem.textContent = '?';
+            playerItem.textContent = 'ʕ•́ᴥ•̀ʔっ';
             playerItem.classList.add('player-empty');
             playerItem.addEventListener('click', function (event) {
                 event.stopPropagation();
@@ -436,13 +466,23 @@ function createTeamElement(team, title, teamIndex = null) {
     return teamDiv;
 }
 
+function reRender (test) {
+    const allPlayers = test.flatMap(team => team.players);
+
+    teams = [];
+
+    allPlayers.forEach(player => {
+        addPlayerToTeam(player);
+    });
+
+    renderTeams();
+    saveTeamsToFirestore();
+}
+
 
 // Função para renderizar os times atualizada com os botões "Venceu"
 function renderTeams() {
-    // console.log('Render Teams:', teams);
     teamsContainer.innerHTML = ''; // Limpa o container de times
-
-    // Remover times vazios (com 0 jogadores)
     teams = teams.filter(team => team.players.some(player => player));
 
     if (teamOnHold) {
@@ -453,9 +493,7 @@ function renderTeams() {
         returningTeamContainer.innerHTML = ''; // Limpa se não houver time em espera
     }
 
-    // Verificar se há pelo menos dois times
     if (teams.length > 0) {
-        // Cria uma seção especial para os dois primeiros times (Time 1 e Time 2)
         const playingTeamsContainer = document.createElement('div');
         playingTeamsContainer.classList.add('playing-teams');
 
@@ -463,12 +501,6 @@ function renderTeams() {
         const team2Div = teams.length > 1 ? createTeamElement(teams[1], 'Time 2', 1) : null;
 
         playingTeamsContainer.appendChild(team1Div);
-
-        // Adicionar o "X" entre os dois times
-        const vsDiv = document.createElement('div');
-        vsDiv.classList.add('versus');
-        vsDiv.textContent = 'X';
-        playingTeamsContainer.appendChild(vsDiv);
 
         if (team2Div) {
             playingTeamsContainer.appendChild(team2Div);

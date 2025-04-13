@@ -28,19 +28,19 @@ body {
     color: var(--font-color);
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    /* justify-content: center; */
+    /* align-items: center; */
     text-align: center;
     height: 100vh;
-    padding-top: 80px;
+    /* padding-top: 80px; */
 }
 
 header {
     width: 100vw;
     padding: 0 10px;
-    background-color: var(--font-color);
+    /* background-color: var(--font-color); */
     height: 80px;
-    position: fixed;
+    /* position: fixed; */
     top: 0;
     border-bottom: 3px solid black;
     display: flex;
@@ -134,7 +134,7 @@ header button {
 section {
     width: 100%;
     height: auto;
-    overflow-y: auto;
+    /* overflow-y: auto; */
 }
 
 #teams {
@@ -150,12 +150,21 @@ section {
     flex-direction: column;
     align-items: center;
     width:  100%;
-    overflow-y: auto;
+    /* overflow-y: auto; */
     padding-bottom: 50px;
 }
 
 #returningTeam {
-    width: 60%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+    width: 100%;
+}
+
+#returningTeam .team {
+  background-color: rgb(106, 110, 156);
+  /* color: var(--font-color); */
+  border: 2px solid #ffffff;
 }
 
 /* Estilo dos times */
@@ -171,11 +180,11 @@ section {
     width: 60%;
     /* height: 150px; */
     margin-top: 20px;
-    overflow-y: auto;
+    /* overflow-y: auto; */
 }
 
 .team-onHold {
-  background-color: rgb(105, 148, 134);
+  background-color: rgb(106, 110, 156);
   /* color: var(--font-color); */
   border: 2px solid #ffffff;
 }
@@ -207,6 +216,7 @@ h3 {
 
 /* Estilo das listas de jogadores */
 .player-space {
+  height: 30px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -219,13 +229,11 @@ h3 {
 }
 
 .player-space span {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  /* padding: 5px; */
   background-color: gold;
   border: 1px solid black;
-  width: 20px;
-  height: 20px;
+  width: 25px;
+  height: 25px;
   /* border-radius: 50%; */
   color: white;
   text-align: center;
@@ -249,7 +257,8 @@ h3 {
 
 /* Destaque para jogador selecionado */
 .player-selected {
-    outline: 2px solid blue;
+  outline: 2px solid blue;
+  background-color: rgba(69, 69, 128, 0.452);
 }
 
 /* Destaque para espaço vazio selecionado */
@@ -304,51 +313,67 @@ h3 {
 }
 
 #clearTeams {
-    width: 60%;
+    /* width: 60%; */
+    width: 60px;
+    height: 60px;
     border: 2px solid black;
     background-color: rgb(255, 0, 0);
     font-family: 'Start';
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     text-transform: uppercase;
-    font-size: 12px;
+    font-size: 6px;
     padding: 5px;
     box-shadow: 5px 5px 0px rgb(0, 0, 0);
     color: white;
 }
 
+#clearTeams span {
+  width: 100%;
+}
 
 /* ###################### ADM */
 
 #adm {
     display: flex;
     flex-direction: column;
-    justify-content: center;   
-    align-items: center;
-    background-color: rgb(252, 91, 91);
+    /* justify-content: center;    */
+    /* align-items: center; */
+    background-color: rgb(67, 39, 70);
     height: 100vh;
+    overflow-y: scroll;
 }
 
-.rules {
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
+.header-rules {
+  padding: 10px;
+  width: 100vw;
+  display: flex;
+  justify-content: space-between;
 }
-
 
 #playerForm {
-    background-color: #3a6799;
-    width: 80%;
+    /* background-color: #3a6799; */
+    width: 100%;
     padding: 8px 20px;
     display: flex;
+    justify-content: center;
+    align-items: center;
     flex-direction: column;
     text-align: left;
     margin-top: 15px;
+    border-bottom: 3px solid white;
 }
 
 #playerForm input {
     height: 28px;
-    border-radius: 15px;
+    /* border-radius: 15px; */
     padding: 0 15px;
     border: 2px solid black;
+    width: 100%;
+    font-family: 'Start';
+    font-size: 10px;
 }
 
 label {
@@ -362,6 +387,7 @@ label {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
 }
 
 #playerForm button {
@@ -373,6 +399,48 @@ label {
     font-size: 12px;
     padding: 5px;
     box-shadow: 5px 5px 0px rgb(0, 0, 0);
+}
+
+#removePlayerBtnShow {
+  display: block;
+  background-color: transparent;
+  border: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 20px;
+  color: #db6b6b;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#undoTeams {
+  width: 60px;
+  height: 60px;
+  border: 2px solid black;
+  background-color: rgb(40, 141, 65);
+  font-family: 'Start';
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-transform: uppercase;
+  font-size: 6px;
+  padding: 5px;
+  box-shadow: 5px 5px 0px rgb(0, 0, 0);
+  color: white;
+}
+
+#undoTeams span {
+  width: 100%;
+}
+
+.buttons-org {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: c;
 }
 
 /* ######################################################### */
@@ -464,6 +532,19 @@ label {
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+
+  /* ############################################ header btn */
+
+  .checkbox-wrapper-55 p {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: 6px;
+    text-transform: uppercase;
+    font-family: 'Start';
+    margin-top: 5px;
   }
 
   .checkbox-wrapper-55 input[type="checkbox"] {
