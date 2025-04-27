@@ -178,14 +178,11 @@ const correctPassword = "Laudado"; // Altere para a senha que você deseja
 // Adicionando evento de clique ao botão
 document.getElementById("admBtn").addEventListener("click", function() {
     const inputPass = document.getElementById("admPass").value;
-
-    // Verifica se a senha inserida está correta
+    
     if (inputPass === correctPassword) {
         localStorage.setItem("isAdmin", "true");
-        // Se correta, redireciona para a página de administrador
         window.location.href = "adm.html";
     } else {
-        // Senha incorreta, exibe uma mensagem de erro
         alert("Senha incorreta!");
     }
 });

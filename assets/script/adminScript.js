@@ -96,7 +96,7 @@ function saveTeamsToFirestore() {
 
 undoBtn.addEventListener('click', function () {
     if (backupUndo && Array.isArray(backupUndo.teams)) {
-        reRender(backupUndo.teams);
+        reRender(backupUndo.teams, backupUndo);
     } else {
         console.warn("Sem backup disponível ou em formato inválido.");
     }
@@ -466,14 +466,20 @@ function createTeamElement(team, title, teamIndex = null) {
     return teamDiv;
 }
 
-function reRender (test) {
-    const allPlayers = test.flatMap(team => team.players);
+function reRender(test, backupData = null) {
+    teams = test.map(team => ({
+        players: team.players.map(player => player ? { ...player } : null),
+        wins: team.wins || 0
+    }));
 
-    teams = [];
-
-    allPlayers.forEach(player => {
-        addPlayerToTeam(player);
-    });
+    if (backupData && backupData.teamOnHold) {
+        teamOnHold = {
+            players: backupData.teamOnHold.players.map(player => player ? { ...player } : null),
+            wins: backupData.teamOnHold.wins || 0
+        };
+    } else {
+        teamOnHold = null;
+    }
 
     renderTeams();
     saveTeamsToFirestore();
@@ -542,8 +548,6 @@ function clearTeams() {
 
 // ##########################
 
-        // Verifica se o usuário está autenticado
-        if (localStorage.getItem("isAdmin") !== "true") {
-            // Se não estiver autenticado, redireciona para a página inicial
-            window.location.href = "index.html";
-        }
+if (localStorage.getItem("isAdmin") !== "true") {
+    window.location.href = "index.html";
+}
