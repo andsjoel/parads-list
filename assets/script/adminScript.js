@@ -434,12 +434,14 @@ function createTeamElement(team, title, teamIndex = null) {
                             selectedPlayer = null;
                             this.style.display = 'none';
                     
-                            reRender(teams);
-                    
                             setTimeout(() => {
                                 selectedPlayer = null;
                             }, 100);
                         }
+
+
+                        renderTeams();
+                        saveTeamsToFirestore();
                     }
                 })
             });
@@ -488,7 +490,7 @@ function reRender(test, backupData = null) {
 
 // Função para renderizar os times atualizada com os botões "Venceu"
 function renderTeams() {
-    teamsContainer.innerHTML = ''; // Limpa o container de times
+    teamsContainer.innerHTML = '';
     teams = teams.filter(team => team.players.some(player => player));
 
     if (teamOnHold) {
@@ -550,4 +552,17 @@ function clearTeams() {
 
 if (localStorage.getItem("isAdmin") !== "true") {
     window.location.href = "index.html";
+}
+
+if (window.location.pathname.endsWith("/adm")) {
+    // Solicita senha
+    const correctPassword = "P4r4ds"; // Defina uma senha segura
+    const userPassword = prompt("Por favor, insira a senha de administrador");
+
+    // Verifica se a senha está correta
+    if (userPassword !== correctPassword) {
+        // Se a senha estiver errada, redireciona para a página inicial ou qualquer outra página
+        alert("Senha incorreta! Redirecionando para a página inicial.");
+        window.location.href = "/"; // Substitua com a URL desejada
+    }
 }
