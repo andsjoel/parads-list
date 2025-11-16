@@ -1,3 +1,31 @@
+// Verificar se está na página /adm
+if (window.location.pathname.endsWith("/adm/")) {
+
+    const correctPassword = "P4r4ds";
+
+    const modal = document.getElementById("adminModal");
+    const input = document.getElementById("adminPasswordInput");
+    const button = document.getElementById("adminPasswordBtn");
+    const errorMsg = document.getElementById("adminError");
+
+    modal.style.display = "flex";
+
+    button.addEventListener("click", checkPassword);
+    input.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") checkPassword();
+    });
+
+    function checkPassword() {
+        if (input.value === correctPassword) {
+            modal.style.display = "none";
+            errorMsg.style.display = "none";
+            input.value = "";
+        } else {
+            errorMsg.style.display = "block";
+        }
+    }
+}
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.6/firebase-app.js";
 
 const firebaseConfig = {
@@ -527,7 +555,7 @@ function renderTeams() {
 
 // Adicionando o evento para o botão de popular times
 document.getElementById('clearTeams').addEventListener('click', clearTeams)
-document.getElementById('populateTeamsButton').addEventListener('click', populateTeams)
+// document.getElementById('populateTeamsButton').addEventListener('click', populateTeams)
 
 
 function populateTeams() {
@@ -550,19 +578,19 @@ function clearTeams() {
 
 // ##########################
 
-if (localStorage.getItem("isAdmin") !== "true") {
-    window.location.href = "index.html";
-}
+// if (localStorage.getItem("isAdmin") !== "true") {
+//     window.location.href = "index.html";
+// }
 
-if (window.location.pathname.endsWith("/adm")) {
-    // Solicita senha
-    const correctPassword = "P4r4ds"; // Defina uma senha segura
-    const userPassword = prompt("Por favor, insira a senha de administrador");
+// if (window.location.pathname.endsWith("/adm")) {
+//     // Solicita senha
+//     const correctPassword = "P4r4ds"; // Defina uma senha segura
+//     const userPassword = prompt("Por favor, insira a senha de administrador");
 
-    // Verifica se a senha está correta
-    if (userPassword !== correctPassword) {
-        // Se a senha estiver errada, redireciona para a página inicial ou qualquer outra página
-        alert("Senha incorreta! Redirecionando para a página inicial.");
-        window.location.href = "/"; // Substitua com a URL desejada
-    }
-}
+//     // Verifica se a senha está correta
+//     if (userPassword !== correctPassword) {
+//         // Se a senha estiver errada, redireciona para a página inicial ou qualquer outra página
+//         alert("Senha incorreta! Redirecionando para a página inicial.");
+//         window.location.href = "/"; // Substitua com a URL desejada
+//     }
+// }

@@ -173,7 +173,7 @@ db.collection('teams').doc('currentTeams').onSnapshot((doc) => {
     }
 });
 
-const correctPassword = "Laudado"; // Altere para a senha que você deseja
+const correctPassword = "Laudado";
 
 // Adicionando evento de clique ao botão
 document.getElementById("admBtn").addEventListener("click", function() {
@@ -181,7 +181,7 @@ document.getElementById("admBtn").addEventListener("click", function() {
     
     if (inputPass === correctPassword) {
         localStorage.setItem("isAdmin", "true");
-        window.location.href = "adm.html";
+        window.location.href = "adm";
     } else {
         alert("Senha incorreta!");
     }

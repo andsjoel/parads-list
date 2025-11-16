@@ -60,6 +60,7 @@ header nav {
 header nav ul {
     display: flex;
     align-items: center;
+    flex-direction: column;
     justify-content: space-around;
 }
 
@@ -92,13 +93,14 @@ header input {
 }
 
 header button {
-    width: 60%;
+    /* width: 60%; */
     border: 2px solid black;
     background-color: rgb(2, 179, 2);
     font-family: 'Start';
     text-transform: uppercase;
     font-size: 12px;
     padding: 5px;
+    margin-top: 10px;
 }
 
 /* Container principal */
@@ -695,3 +697,44 @@ label {
   .checkbox-wrapper-55 input:checked:focus + .switch-left + .switch-right {
     color: #333;
   }
+
+  .admin-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.856);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+}
+.admin-modal-content {
+    /* background: #fff; */
+    padding: 25px;
+    border-radius: 12px;
+    width: 300px;
+    text-align: center;
+}
+.admin-modal input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+}
+.admin-modal button {
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px;
+}
+
+#adminPasswordBtn {
+      /* width: 60%; */
+    border: 2px solid black;
+    background-color: rgb(2, 179, 2);
+    font-family: 'Start';
+    text-transform: uppercase;
+    font-size: 12px;
+    padding: 5px;
+    margin-top: 10px;
+}

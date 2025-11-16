@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Organizador de Times de Vôlei</title>
-    <link rel="stylesheet" href="./assets/styles/styles.css">
+    <link rel="stylesheet" href="../assets/styles/styles.css">
 </head>
 <body>
     <section id="adm">
         <div class="header-rules">
-          <button id="clearTeams"><span><img src="./assets/images/warning.svg" alt="warning delete"></span>Limpar</button>
-          <button id="undoTeams"><span><img src="./assets/images/undo.svg" alt="undo svg"></span>Desfazer</button>
+          <button id="clearTeams"><span><img src="../assets/images/warning.svg" alt="warning delete"></span>Limpar</button>
+          <button id="undoTeams"><span><img src="../assets/images/undo.svg" alt="undo svg"></span>Desfazer</button>
           <div class="buttons-org">
 
           </div>
@@ -63,10 +63,20 @@
         
     </section>
 
+    <div id="adminModal" class="admin-modal">
+      <div class="admin-modal-content">
+          <h2>Administrador</h2>
+          <p>Digite a senha para acessar:</p>
+          <input type="password" id="adminPasswordInput" placeholder="Senha">
+          <button id="adminPasswordBtn">Entrar</button>
+          <p id="adminError" style="color:red; display:none; margin-top:10px;">Senha incorreta!</p>
+      </div>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
 
-    <script type="module" src="./assets/script/adminScript.js"></script>
-    <script src="./assets/script/mockData.js"></script>
+    <script type="module" src="../assets/script/adminScript.js"></script>
+    <script src="../assets/script/mockData.js"></script>
 </body>
 </html>
